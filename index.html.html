@@ -1,0 +1,344 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{font-family:var(--font-sans);background:#f0f2f5;border-radius:14px;overflow:hidden;border:0.5px solid var(--border);}
+.topbar{background:#1e293b;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:44px;}
+.topbar-title{color:#fff;font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;}
+.topbar-title i{color:#f59e0b;font-size:16px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.tb-badge{background:#f59e0b;color:#7c3a00;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;}
+.tb-user{color:rgba(255,255,255,0.7);font-size:12px;display:flex;align-items:center;gap:5px;}
+.tb-user i{font-size:14px;}
+
+.layout{display:flex;height:560px;}
+.sidebar{width:175px;background:#1e293b;padding:0.75rem 0;flex-shrink:0;display:flex;flex-direction:column;}
+.nav-section{font-size:9px;font-weight:500;color:rgba(255,255,255,0.3);letter-spacing:0.8px;padding:0.5rem 1rem 0.25rem;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 1rem;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.6);border-left:2px solid transparent;transition:all 0.15s;}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+.nav-item.active{color:#f59e0b;background:rgba(245,158,11,0.1);border-left-color:#f59e0b;}
+.nav-item i{font-size:15px;width:16px;}
+
+.content{flex:1;overflow-y:auto;padding:1.25rem;}
+
+.screen{display:none;}
+.screen.active{display:block;}
+
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.page-title{font-size:16px;font-weight:500;color:var(--text-primary);}
+.page-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.btn-primary{background:#f59e0b;color:#7c3a00;border:none;border-radius:var(--radius);padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+.btn-primary i{font-size:13px;}
+.btn-sm{background:var(--surface-2);border:0.5px solid var(--border);color:var(--text-primary);border-radius:var(--radius);padding:5px 10px;font-size:11px;cursor:pointer;}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem;}
+.stat-card{background:var(--surface-2);border-radius:10px;border:0.5px solid var(--border);padding:0.75rem 1rem;}
+.stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:16px;}
+.stat-val{font-size:20px;font-weight:500;color:var(--text-primary);line-height:1;}
+.stat-lbl{font-size:10px;color:var(--text-muted);margin-top:3px;}
+
+.card{background:var(--surface-2);border-radius:10px;border:0.5px solid var(--border);padding:1rem;margin-bottom:10px;}
+.card-title{font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:0.75rem;display:flex;align-items:center;justify-content:space-between;}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:11px;}
+th{text-align:left;padding:6px 8px;color:var(--text-muted);font-weight:500;border-bottom:0.5px solid var(--border);white-space:nowrap;}
+td{padding:7px 8px;color:var(--text-primary);border-bottom:0.5px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface-1);}
+
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;}
+.badge-green{background:#dcfce7;color:#166534;}
+.badge-amber{background:#fef3c7;color:#92400e;}
+.badge-red{background:#fee2e2;color:#991b1b;}
+.badge-blue{background:#dbeafe;color:#1e40af;}
+.badge-purple{background:#ede9fe;color:#5b21b6;}
+
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.menu-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;padding:0.75rem;cursor:pointer;transition:border-color 0.15s;}
+.menu-card:hover{border-color:#f59e0b;}
+.menu-cat{font-size:9px;color:var(--text-muted);margin-bottom:2px;}
+.menu-name{font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+.menu-price{font-size:13px;font-weight:500;color:#f59e0b;}
+.menu-avail{font-size:10px;}
+
+.order-panel{display:grid;grid-template-columns:1fr 200px;gap:10px;}
+.order-item-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:11px;}
+.order-item-row:last-child{border-bottom:none;}
+.qty-ctrl{display:flex;align-items:center;gap:6px;}
+.qty-btn{width:20px;height:20px;border-radius:4px;background:#f59e0b;border:none;color:#7c3a00;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.bill-summary{background:var(--surface-1);border-radius:8px;padding:0.75rem;}
+.bill-row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;color:var(--text-secondary);}
+.bill-total{display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--text-primary);padding-top:8px;border-top:0.5px solid var(--border);margin-top:4px;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-label{font-size:11px;color:var(--text-secondary);font-weight:500;}
+.form-input{background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-size:12px;color:var(--text-primary);outline:none;}
+.form-input:focus{border-color:#f59e0b;}
+
+.report-chart{height:80px;display:flex;align-items:flex-end;gap:4px;padding:0 4px;}
+.bar{flex:1;border-radius:4px 4px 0 0;background:#f59e0b;opacity:0.8;min-width:0;}
+.bar-label{font-size:9px;color:var(--text-muted);text-align:center;margin-top:3px;}
+
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:560px;background:#f0f2f5;padding:1rem;}
+.login-card{background:var(--surface-2);border-radius:14px;border:0.5px solid var(--border);padding:2rem;width:300px;}
+.login-logo{text-align:center;margin-bottom:1.5rem;}
+.login-logo i{font-size:36px;color:#f59e0b;}
+.login-logo h2{font-size:18px;font-weight:500;color:var(--text-primary);margin-top:6px;}
+.login-logo p{font-size:11px;color:var(--text-muted);}
+.login-field{margin-bottom:12px;}
+.login-field label{font-size:11px;color:var(--text-secondary);font-weight:500;display:block;margin-bottom:4px;}
+.login-field input{width:100%;background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:13px;color:var(--text-primary);outline:none;}
+.login-field input:focus{border-color:#f59e0b;}
+.login-btn{width:100%;background:#f59e0b;color:#7c3a00;border:none;border-radius:var(--radius);padding:9px;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px;}
+.role-select{display:flex;gap:6px;margin-bottom:1rem;}
+.role-opt{flex:1;border:0.5px solid var(--border);border-radius:var(--radius);padding:6px;text-align:center;cursor:pointer;font-size:10px;color:var(--text-secondary);background:var(--surface-1);}
+.role-opt.sel{border-color:#f59e0b;background:#fef3c7;color:#92400e;}
+</style>
+
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <i class="ti ti-building-store" aria-hidden="true"></i>
+        <h2>RestaurantMS</h2>
+        <p>Sign in to your account</p>
+      </div>
+      <div class="role-select">
+        <div class="role-opt sel" onclick="selectRole(this,'Admin')"><i class="ti ti-shield" style="display:block;font-size:16px;margin-bottom:2px;" aria-hidden="true"></i>Admin</div>
+        <div class="role-opt" onclick="selectRole(this,'Manager')"><i class="ti ti-briefcase" style="display:block;font-size:16px;margin-bottom:2px;" aria-hidden="true"></i>Manager</div>
+        <div class="role-opt" onclick="selectRole(this,'Waiter')"><i class="ti ti-user" style="display:block;font-size:16px;margin-bottom:2px;" aria-hidden="true"></i>Waiter</div>
+      </div>
+      <div class="login-field"><label>Username</label><input type="text" value="admin" /></div>
+      <div class="login-field"><label>Password</label><input type="password" value="••••••••" /></div>
+      <button class="login-btn" onclick="enterApp()"><i class="ti ti-login" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"></i>Sign in</button>
+    </div>
+  </div>
+</div>
+
+<div id="main-app" style="display:none;">
+  <div class="app">
+    <div class="topbar">
+      <div class="topbar-title"><i class="ti ti-building-store" aria-hidden="true"></i>RestaurantMS</div>
+      <div class="topbar-right">
+        <div class="tb-badge">Live</div>
+        <div class="tb-user"><i class="ti ti-user-circle" aria-hidden="true"></i><span id="role-label">Admin</span></div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="sidebar">
+        <div class="nav-section">Main</div>
+        <div class="nav-item active" onclick="showScreen('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+        <div class="nav-item" onclick="showScreen('menu',this)"><i class="ti ti-clipboard-list" aria-hidden="true"></i>Menu</div>
+        <div class="nav-item" onclick="showScreen('orders',this)"><i class="ti ti-shopping-cart" aria-hidden="true"></i>Orders</div>
+        <div class="nav-item" onclick="showScreen('billing',this)"><i class="ti ti-receipt" aria-hidden="true"></i>Billing</div>
+        <div class="nav-section">People</div>
+        <div class="nav-item" onclick="showScreen('customers',this)"><i class="ti ti-users" aria-hidden="true"></i>Customers</div>
+        <div class="nav-item" onclick="showScreen('employees',this)"><i class="ti ti-id-badge" aria-hidden="true"></i>Employees</div>
+        <div class="nav-section">Reports</div>
+        <div class="nav-item" onclick="showScreen('reports',this)"><i class="ti ti-chart-bar" aria-hidden="true"></i>Sales report</div>
+        <div style="flex:1;"></div>
+        <div class="nav-item" onclick="logout()"><i class="ti ti-logout" aria-hidden="true"></i>Sign out</div>
+      </div>
+      <div class="content">
+
+        <div id="s-dashboard" class="screen active">
+          <div class="page-header">
+            <div><div class="page-title">Dashboard</div><div class="page-sub">Today, June 26 2025</div></div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-card"><div class="stat-icon" style="background:#fef3c7;"><i class="ti ti-currency-taka" style="color:#f59e0b;font-size:16px;" aria-hidden="true"></i></div><div class="stat-val">৳18,450</div><div class="stat-lbl">Today's revenue</div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;"><i class="ti ti-shopping-cart" style="color:#3b82f6;font-size:16px;" aria-hidden="true"></i></div><div class="stat-val">47</div><div class="stat-lbl">Orders today</div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#dcfce7;"><i class="ti ti-users" style="color:#16a34a;font-size:16px;" aria-hidden="true"></i></div><div class="stat-val">134</div><div class="stat-lbl">Customers</div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#ede9fe;"><i class="ti ti-clipboard-list" style="color:#7c3aed;font-size:16px;" aria-hidden="true"></i></div><div class="stat-val">62</div><div class="stat-lbl">Menu items</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Recent orders <span class="badge badge-blue">Live</span></div>
+            <div class="table-wrap"><table>
+              <tr><th>Order #</th><th>Table</th><th>Items</th><th>Amount</th><th>Status</th></tr>
+              <tr><td>#1047</td><td>T-05</td><td>Biryani, Pepsi</td><td>৳420</td><td><span class="badge badge-green">Served</span></td></tr>
+              <tr><td>#1046</td><td>T-02</td><td>Burger, Fries, Juice</td><td>৳580</td><td><span class="badge badge-amber">Ready</span></td></tr>
+              <tr><td>#1045</td><td>T-08</td><td>Pasta, Coke</td><td>৳350</td><td><span class="badge badge-red">Pending</span></td></tr>
+              <tr><td>#1044</td><td>T-01</td><td>Pizza (L), Water x2</td><td>৳750</td><td><span class="badge badge-green">Served</span></td></tr>
+            </table></div>
+          </div>
+        </div>
+
+        <div id="s-menu" class="screen">
+          <div class="page-header">
+            <div><div class="page-title">Menu management</div><div class="page-sub">62 items across 5 categories</div></div>
+            <button class="btn-primary"><i class="ti ti-plus" aria-hidden="true"></i>Add item</button>
+          </div>
+          <div class="menu-grid">
+            <div class="menu-card"><div class="menu-cat">Mains</div><div class="menu-name">Chicken Biryani</div><div style="display:flex;justify-content:space-between;align-items:center;"><div class="menu-price">৳280</div><span class="badge badge-green menu-avail">Available</span></div></div>
+            <div class="menu-card"><div class="menu-cat">Fast food</div><div class="menu-name">Beef Burger</div><div style="display:flex;justify-content:space-between;align-items:center;"><div class="menu-price">৳320</div><span class="badge badge-green menu-avail">Available</span></div></div>
+            <div class="menu-card"><div class="menu-cat">Italian</div><div class="menu-name">Pasta Arrabiata</div><div style="display:flex;justify-content:space-between;align-items:center;"><div class="menu-price">৳260</div><span class="badge badge-amber menu-avail">Low stock</span></div></div>
+            <div class="menu-card"><div class="menu-cat">Mains</div><div class="menu-name">Grilled Fish</div><div style="display:flex;justify-content:space-between;align-items:center;"><div class="menu-price">৳380</div><span class="badge badge-green menu-avail">Available</span></div></div>
+            <div class="menu-card"><div class="menu-cat">Drinks</div><div class="menu-name">Fresh Juice</div><div style="display:flex;justify-content:space-between;align-items:center;"><div class="menu-price">৳80</div><span class="badge badge-green menu-avail">Available</span></div></div>
+            <div class="menu-card"><div class="menu-cat">Pizza</div><div class="menu-name">Margherita (L)</div><div style="display:flex;justify-content:space-between;align-items:center;"><div class="menu-price">৳650</div><span class="badge badge-red menu-avail">Unavailable</span></div></div>
+          </div>
+        </div>
+
+        <div id="s-orders" class="screen">
+          <div class="page-header">
+            <div><div class="page-title">Order management</div><div class="page-sub">Place and track orders</div></div>
+            <button class="btn-primary"><i class="ti ti-plus" aria-hidden="true"></i>New order</button>
+          </div>
+          <div class="order-panel">
+            <div class="card" style="margin:0;">
+              <div class="card-title">Order #1048 — Table 03</div>
+              <div class="order-item-row"><span>Chicken Biryani</span><div class="qty-ctrl"><button class="qty-btn">−</button><span style="font-size:12px;font-weight:500;">2</span><button class="qty-btn">+</button></div><span style="font-weight:500;color:#f59e0b;">৳560</span></div>
+              <div class="order-item-row"><span>Pepsi (330ml)</span><div class="qty-ctrl"><button class="qty-btn">−</button><span style="font-size:12px;font-weight:500;">1</span><button class="qty-btn">+</button></div><span style="font-weight:500;color:#f59e0b;">৳60</span></div>
+              <div class="order-item-row"><span>Garlic Bread</span><div class="qty-ctrl"><button class="qty-btn">−</button><span style="font-size:12px;font-weight:500;">1</span><button class="qty-btn">+</button></div><span style="font-weight:500;color:#f59e0b;">৳90</span></div>
+              <div style="padding-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+                <span class="badge badge-amber">Pending</span>
+                <span class="badge badge-blue">Dine-in</span>
+              </div>
+            </div>
+            <div>
+              <div class="bill-summary">
+                <div style="font-size:11px;font-weight:500;color:var(--text-primary);margin-bottom:6px;">Order summary</div>
+                <div class="bill-row"><span>Subtotal</span><span>৳710</span></div>
+                <div class="bill-row"><span>VAT (5%)</span><span>৳36</span></div>
+                <div class="bill-row"><span>Discount</span><span>− ৳0</span></div>
+                <div class="bill-total"><span>Total</span><span>৳746</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+                <button class="btn-primary" style="justify-content:center;width:100%;">Confirm order</button>
+                <button class="btn-sm" style="width:100%;text-align:center;">Mark as ready</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="s-billing" class="screen">
+          <div class="page-header">
+            <div><div class="page-title">Billing system</div><div class="page-sub">Generate and print invoices</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Invoice #1044 — Table 01</div>
+            <div class="table-wrap"><table>
+              <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+              <tr><td>Margherita Pizza (L)</td><td>1</td><td>৳650</td><td>৳650</td></tr>
+              <tr><td>Mineral Water</td><td>2</td><td>৳40</td><td>৳80</td></tr>
+              <tr><td>Chocolate Lava Cake</td><td>1</td><td>৳180</td><td>৳180</td></tr>
+            </table></div>
+            <div style="border-top:0.5px solid var(--border);padding-top:12px;margin-top:8px;">
+              <div style="display:flex;justify-content:flex-end;"><div style="width:180px;">
+                <div class="bill-row"><span>Subtotal</span><span>৳910</span></div>
+                <div class="bill-row"><span>VAT (5%)</span><span>৳46</span></div>
+                <div class="bill-row"><span>Discount (10%)</span><span>− ৳91</span></div>
+                <div class="bill-total"><span>Total</span><span>৳865</span></div>
+              </div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+              <button class="btn-primary"><i class="ti ti-printer" aria-hidden="true"></i>Print receipt</button>
+              <button class="btn-sm"><i class="ti ti-download" style="font-size:12px;vertical-align:-1px;" aria-hidden="true"></i>Export PDF</button>
+              <span class="badge badge-green" style="align-self:center;">Paid — Cash</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="s-customers" class="screen">
+          <div class="page-header">
+            <div><div class="page-title">Customer management</div><div class="page-sub">134 registered customers</div></div>
+            <button class="btn-primary"><i class="ti ti-plus" aria-hidden="true"></i>Add customer</button>
+          </div>
+          <div class="card">
+            <div class="table-wrap"><table>
+              <tr><th>#</th><th>Name</th><th>Phone</th><th>Visits</th><th>Total spent</th><th>Status</th></tr>
+              <tr><td>101</td><td>Rakib Hasan</td><td>01711-000001</td><td>12</td><td>৳8,420</td><td><span class="badge badge-purple">VIP</span></td></tr>
+              <tr><td>102</td><td>Nusrat Jahan</td><td>01812-000022</td><td>5</td><td>৳2,100</td><td><span class="badge badge-green">Regular</span></td></tr>
+              <tr><td>103</td><td>Tanvir Ahmed</td><td>01911-000033</td><td>1</td><td>৳580</td><td><span class="badge badge-blue">New</span></td></tr>
+              <tr><td>104</td><td>Sumaiya Akter</td><td>01611-000044</td><td>8</td><td>৳5,300</td><td><span class="badge badge-green">Regular</span></td></tr>
+            </table></div>
+          </div>
+        </div>
+
+        <div id="s-employees" class="screen">
+          <div class="page-header">
+            <div><div class="page-title">Employee management</div><div class="page-sub">18 staff members</div></div>
+            <button class="btn-primary"><i class="ti ti-plus" aria-hidden="true"></i>Add employee</button>
+          </div>
+          <div class="card">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Full name</label><input class="form-input" value="Md. Karim" /></div>
+              <div class="form-group"><label class="form-label">Role</label><select class="form-input"><option>Waiter</option><option>Chef</option><option>Manager</option><option>Cashier</option></select></div>
+              <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="01700-000000" /></div>
+              <div class="form-group"><label class="form-label">Monthly salary (৳)</label><input class="form-input" value="12000" /></div>
+            </div>
+            <button class="btn-primary">Save employee</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Staff list</div>
+            <div class="table-wrap"><table>
+              <tr><th>Name</th><th>Role</th><th>Shift</th><th>Salary</th><th>Status</th></tr>
+              <tr><td>Arif Billah</td><td>Chef</td><td>Morning</td><td>৳18,000</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>Sadia Islam</td><td>Waiter</td><td>Evening</td><td>৳10,000</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>Mahfuz Ali</td><td>Cashier</td><td>Morning</td><td>৳12,000</td><td><span class="badge badge-amber">On leave</span></td></tr>
+            </table></div>
+          </div>
+        </div>
+
+        <div id="s-reports" class="screen">
+          <div class="page-header">
+            <div><div class="page-title">Sales report</div><div class="page-sub">Weekly overview</div></div>
+            <button class="btn-sm"><i class="ti ti-download" style="font-size:12px;vertical-align:-1px;" aria-hidden="true"></i>Export PDF</button>
+          </div>
+          <div class="stats-row">
+            <div class="stat-card"><div class="stat-val" style="color:#f59e0b;">৳1,24,800</div><div class="stat-lbl">This month</div></div>
+            <div class="stat-card"><div class="stat-val">৳18,450</div><div class="stat-lbl">Today</div></div>
+            <div class="stat-card"><div class="stat-val">47</div><div class="stat-lbl">Orders today</div></div>
+            <div class="stat-card"><div class="stat-val">৳393</div><div class="stat-lbl">Avg. order value</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Weekly revenue (৳)</div>
+            <div class="report-chart">
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;"><div class="bar" style="height:55%;"></div><div class="bar-label">Mon</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;"><div class="bar" style="height:70%;"></div><div class="bar-label">Tue</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;"><div class="bar" style="height:45%;"></div><div class="bar-label">Wed</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;"><div class="bar" style="height:85%;"></div><div class="bar-label">Thu</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;"><div class="bar" style="height:100%;"></div><div class="bar-label">Fri</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;"><div class="bar" style="height:90%;"></div><div class="bar-label">Sat</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;"><div class="bar" style="height:75%;"></div><div class="bar-label">Sun</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Top selling items</div>
+            <div class="table-wrap"><table>
+              <tr><th>Item</th><th>Orders</th><th>Revenue</th></tr>
+              <tr><td>Chicken Biryani</td><td>142</td><td>৳39,760</td></tr>
+              <tr><td>Beef Burger</td><td>98</td><td>৳31,360</td></tr>
+              <tr><td>Margherita Pizza (L)</td><td>61</td><td>৳39,650</td></tr>
+            </table></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentRole='Admin';
+function selectRole(el,role){
+  document.querySelectorAll('.role-opt').forEach(function(r){r.classList.remove('sel');});
+  el.classList.add('sel');
+  currentRole=role;
+}
+function enterApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  document.getElementById('role-label').textContent=currentRole;
+}
+function logout(){
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('login-screen').style.display='block';
+}
+function showScreen(id,navEl){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('s-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  navEl.classList.add('active');
+}
+</script>
